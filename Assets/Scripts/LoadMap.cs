@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using System.Linq;
+using System;
 
 public class LoadMap : MonoBehaviour
 {
@@ -23,7 +25,7 @@ public class LoadMap : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Alpha1)) MapCreate(3);
     }
 
-    private char[][] ParseMapFile(int index)
+    private byte[][] ParseMapFile(int index)
     {
         if(index < 0 || index >= mapFiles.Length)
         {
@@ -44,26 +46,56 @@ public class LoadMap : MonoBehaviour
             map[i] = lines[(mapHeight - i - 1)+4].ToCharArray();
         }
 
-        return map;
+        // convert each 2x2 tile to a single tile
+        mapHeight /= 2;
+        mapWidth /= 2;
+        byte[][] map_byte = new byte[mapHeight][];
+        for(int i = 0; i < mapHeight; i++)
+        {
+            map_byte[i] = new byte[mapWidth];
+            for(int j = 0; j < mapWidth; j++)
+            {
+                byte[] tile = new byte[mapTiles.Length];
+                tile[GetTileNum(map[i*2][j*2])]++;
+                tile[GetTileNum(map[i*2][j*2+1])]++;
+                tile[GetTileNum(map[i*2+1][j*2])]++;
+                tile[GetTileNum(map[i*2+1][j*2+1])]++;
+
+                int max = Array.IndexOf(tile, tile.Max());
+                map_byte[i][j] = (byte)max;
+            }
+        }
+        
+
+        return map_byte;
     }
 
     private void MapCreate(int index){
-        char[][] map = ParseMapFile(index);
+        byte[][] map = ParseMapFile(index);
 
         for(int y = 0; y < mapHeight; y++)
         {
             for(int x = 0; x < mapWidth; x++)
             {
-                char tile = map[y][x];
-                if(tile == '.'){
-                    GameObject tiletmp = Instantiate(mapTiles[0], new Vector3(x, y, 0), Quaternion.identity);
-                    tiletmp.transform.parent = transform;
-                }
-                else if(tile == 'T'){
-                    GameObject tiletmp = Instantiate(mapTiles[1], new Vector3(x, y, 0), Quaternion.identity);
-                    tiletmp.transform.parent = transform;
-                }
+                byte tile = map[y][x];
+                GameObject tiletmp = Instantiate(mapTiles[tile], new Vector3(x, y, 0), Quaternion.identity);
+                tiletmp.transform.parent = transform;
             }
+        }
+    }
+
+    int GetTileNum(char tile)
+    {
+        switch(tile)
+        {
+            case '.':
+                return 0;
+            case 'T':
+                return 1;
+            case '@':
+                return 2;
+            default:
+                return 2;
         }
     }
 }
