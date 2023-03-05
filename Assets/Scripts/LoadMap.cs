@@ -6,17 +6,20 @@ using System.Linq;
 using System;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 
 public class LoadMap : MonoBehaviour
 {
     [SerializeField] TMP_Dropdown dropdown_Map, dropdown_Algorithm;
-    public TextAsset[] mapFiles;
-    public GameObject[] mapTiles;
+    [SerializeField] Slider time;
+    [SerializeField] TMP_Text text_Time;
+    TextAsset[] mapFiles;
+    GameObject[] mapTiles;
     Hashtable mapTable = new Hashtable();
     Node startNode, endNode, pendingNode;
 
-    public int mapWidth, mapHeight;
+    int mapWidth, mapHeight;
     static Func<Node, Node, float> heuristic = null;
 
     // Start is called before the first frame update
@@ -242,7 +245,7 @@ public class LoadMap : MonoBehaviour
             }
             closedList.Add(q);
             q.SetColor(Color.yellow);
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(time.value);
         }
 
 
@@ -253,8 +256,12 @@ public class LoadMap : MonoBehaviour
         while(tmp != startNode){
             tmp.SetColor(Color.red);
             tmp = tmp.parent;
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(time.value);
         }
+    }
+
+    public void UpdateTimer(){
+        text_Time.text = Mathf.Round(time.value * 10f)/10f + "s";
     }
 
     int GetTileNum(char tile)
