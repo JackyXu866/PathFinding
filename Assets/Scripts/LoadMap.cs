@@ -274,6 +274,10 @@ public class LoadMap : MonoBehaviour
 
     private void CleanUp()
     {
+        startNode = null;
+        endNode = null;
+        pendingNode = null;
+        
         foreach(Transform child in transform)
         {
             Destroy(child.gameObject);
