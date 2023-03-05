@@ -198,7 +198,7 @@ public class LoadMap : MonoBehaviour
 
     IEnumerator Astar_tile(){
         if(startNode == null || endNode == null)
-            yield return null;
+            yield break;
         List<Node> openList = new List<Node>();
         List<Node> closedList = new List<Node>();
         openList.Add(startNode);
