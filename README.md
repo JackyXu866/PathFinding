@@ -1,3 +1,5 @@
+WebGL link: [itch](https://gloryjacky.itch.io/astar）
+
 How to RUN program:
 top right corner is a drop down menu to choose the map
 top left corner has a ‘+’ button to open up the setting for A*:
