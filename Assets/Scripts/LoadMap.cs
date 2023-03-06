@@ -15,10 +15,12 @@ public class LoadMap : MonoBehaviour
     [SerializeField] Slider time;
     [SerializeField] TMP_Text text_Time;
     [SerializeField] Toggle toggle_Waypoint;
+    LineRenderer lineRenderer;
     TextAsset[] mapFiles;
     GameObject[] mapTiles;
     Hashtable mapTable = new Hashtable();
     Node startNode, endNode, pendingNode;
+    int map_index = 0;
 
     int mapWidth, mapHeight;
     static Func<Node, Node, float> heuristic = null;
@@ -28,6 +30,7 @@ public class LoadMap : MonoBehaviour
     {
         mapFiles = Resources.LoadAll<TextAsset>("Maps");
         mapTiles = Resources.LoadAll<GameObject>("Tiles");
+        lineRenderer = GetComponent<LineRenderer>();
 
         // dropdown_Map
         dropdown_Map.ClearOptions();
@@ -226,6 +229,8 @@ public class LoadMap : MonoBehaviour
             for(int j = i+1; j < waypointsData.Count; j++)
                 ((Node)mapTable[(Vector2) waypointsData[i]]).AddWaypointConnection(ref mapTable, (Node)mapTable[(Vector2)waypointsData[j]]);
         }
+
+        map_index = index;
     }
 
     public void StartAStar(){
@@ -238,6 +243,22 @@ public class LoadMap : MonoBehaviour
 
         // check if waypoint
         int way = toggle_Waypoint.isOn ? 1 : 0;
+
+        if(way == 1){
+            List<Vector2> waypointsData = new List<Vector2>();
+            if (map_index == 0)
+                waypointsData = create_database_ar0011sr();
+            else if (map_index == 1)
+                waypointsData = create_database_Arena2();
+            else if (map_index == 2)
+                waypointsData = create_database_hrt201n();
+            else if (map_index == 3)
+                waypointsData = create_database_lak104d();
+            for(int i=0; i<waypointsData.Count; i++){
+                startNode.AddWaypointConnection(ref mapTable, (Node)mapTable[(Vector2)waypointsData[i]]);
+                endNode.AddWaypointConnection(ref mapTable, (Node)mapTable[(Vector2)waypointsData[i]]);
+            }
+        }
 
         List<Node> openList = new List<Node>();
         List<Node> closedList = new List<Node>();
@@ -290,11 +311,17 @@ public class LoadMap : MonoBehaviour
 
     IEnumerator RetracePath(){
         Node tmp = endNode;
+        lineRenderer.positionCount = 1;
+        lineRenderer.SetPosition(0, new Vector3(tmp.tile.transform.position.x, tmp.tile.transform.position.y, -1));
         while(tmp != startNode){
             tmp.SetColor(Color.red);
             tmp = tmp.parent;
+            lineRenderer.positionCount++;
+            lineRenderer.SetPosition(lineRenderer.positionCount-1, new Vector3(tmp.tile.transform.position.x, tmp.tile.transform.position.y, -1));
             yield return new WaitForSeconds(time.value);
         }
+        lineRenderer.positionCount++;
+        lineRenderer.SetPosition(lineRenderer.positionCount-1, new Vector3(startNode.tile.transform.position.x, startNode.tile.transform.position.y, -1));
     }
 
     public void UpdateTimer(){
@@ -321,6 +348,7 @@ public class LoadMap : MonoBehaviour
         startNode = null;
         endNode = null;
         pendingNode = null;
+        lineRenderer.positionCount = 0;
         
         foreach(Transform child in transform)
         {
@@ -337,6 +365,7 @@ public class LoadMap : MonoBehaviour
         startNode = null;
         endNode = null;
         pendingNode = null;
+        lineRenderer.positionCount = 0;
     }
 
     static float Heuristic_Manhattan(Node a, Node b)

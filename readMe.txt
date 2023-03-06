@@ -3,8 +3,9 @@ top right corner is a drop down menu to choose the map
 top left corner has a ‘+’ button to open up the setting for A*:
 	choose Heuristic between `Manhattan` and `Euclidean`
 	set the timer gap for each iteration of A* (for showing algorithm step by step)
-	start algorithm button (when both start and end are set)
+	Waypoint mode toggle
 	reset the map
+	start algorithm button (when both start and end are set)
 
 In map:
 	player could click any tile and turn it to grey -> pending action
