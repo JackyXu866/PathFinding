@@ -9,6 +9,7 @@ public class Node
 {
     public GameObject tile;
     public List<Node> neighbors = new List<Node>();
+    public List<Node> waypointNeighbors = new List<Node>();
     public int x, y;
     public float gCost=0, hCost=0, fCost=0;
     public Node parent;
@@ -46,19 +47,19 @@ public class Node
     }
 
     //add pointway neighbors
-    public void AddWaypointConnection(ref Hashtable table, Node currentNode, Node targetNode)
+    public void AddWaypointConnection(ref Hashtable table, Node targetNode)
     {
         //check if there is obstacle between current node and target node
         //use y = ax + b function and round up to see result
         //(0,0) --> (3,1)
         //check (0,0)(1,0)(2,1)(3,1)
-        //float a = float(currentNode.y - targetNode.y) / float(currentNode.x - targetNode.x);
-        //float b = a * currentNode.x - currentNode.y;
-        for (int i = currentNode.x + 1; i < targetNode.x; i++)
+        //float a = float(this.y - targetNode.y) / float(this.x - targetNode.x);
+        //float b = a * this.x - this.y;
+        for (int i = this.x + 1; i < targetNode.x; i++)
         {
-            for (int j = currentNode.y + 1; j < targetNode.y; j++)
+            for (int j = this.y + 1; j < targetNode.y; j++)
             {
-                if(LinePassesThroughGrid((float)currentNode.x, (float)currentNode.y, (float)targetNode.x, (float)targetNode.y, (float)i, (float)j, (float)1.0))
+                if(LinePassesThroughGrid((float)this.x, (float)this.y, (float)targetNode.x, (float)targetNode.y, (float)i, (float)j, (float)1.0))
                 {
                     Vector2 position = new Vector2(i, j);
                     Collider2D collider = Physics2D.OverlapPoint(position);
@@ -70,8 +71,13 @@ public class Node
                 }
             }
         }
-        ((Node)table[new Vector2(currentNode.x, currentNode.y)]).neighbors.Add(targetNode);
-        ((Node)table[new Vector2(targetNode.x, targetNode.y)]).neighbors.Add(currentNode);
+        waypointNeighbors.Add(targetNode);
+        ((Node)table[new Vector2(targetNode.x, targetNode.y)]).waypointNeighbors.Add(this);
+    }
+
+    public ref List<Node> GetNeighbor(int index){
+        if(index == 0) return ref neighbors;
+        else return ref waypointNeighbors;
     }
 
     public void SetColor(Color color)

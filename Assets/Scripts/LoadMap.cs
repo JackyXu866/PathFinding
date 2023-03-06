@@ -14,6 +14,7 @@ public class LoadMap : MonoBehaviour
     [SerializeField] TMP_Dropdown dropdown_Map, dropdown_Algorithm;
     [SerializeField] Slider time;
     [SerializeField] TMP_Text text_Time;
+    [SerializeField] Toggle toggle_Waypoint;
     TextAsset[] mapFiles;
     GameObject[] mapTiles;
     Hashtable mapTable = new Hashtable();
@@ -69,27 +70,40 @@ public class LoadMap : MonoBehaviour
         if(EventSystem.current.IsPointerOverGameObject())
             return;
         if(pendingNode != null){
-            if(Input.GetKeyDown(KeyCode.S)){
-                // start 
-                if(startNode != null)
-                    startNode.SetColor(Color.white);
-                startNode = pendingNode;
-                pendingNode = null;
-                startNode.SetColor(Color.red);
-            }
-            else if(Input.GetKeyDown(KeyCode.E)){
-                // end
-                if(endNode != null)
-                    endNode.SetColor(Color.white);
-                endNode = pendingNode;
-                pendingNode = null;
-                endNode.SetColor(Color.green);
+            if(pendingNode.tile.CompareTag("Walkable")){
+                if(Input.GetKeyDown(KeyCode.S)){
+                    // start 
+                    if(startNode != null)
+                        startNode.SetColor(Color.white);
+                    startNode = pendingNode;
+                    pendingNode = null;
+                    startNode.SetColor(Color.red);
+                }
+                else if(Input.GetKeyDown(KeyCode.E)){
+                    // end
+                    if(endNode != null)
+                        endNode.SetColor(Color.white);
+                    endNode = pendingNode;
+                    pendingNode = null;
+                    endNode.SetColor(Color.green);
+                }
             }
             else if(Input.GetKeyDown(KeyCode.O)){
                 // obstacle
                 if(pendingNode == startNode || pendingNode == endNode){}
                 else{
                     GameObject tmp = Instantiate(mapTiles[1], pendingNode.tile.transform.position, Quaternion.identity);
+                    tmp.transform.parent = transform;
+                    Destroy(pendingNode.tile);
+                    pendingNode.ChangeTile(tmp);
+                    pendingNode = null;
+                }
+            }
+            else if(Input.GetKeyDown(KeyCode.R)){
+                // walkable
+                if(pendingNode == startNode || pendingNode == endNode){}
+                else{
+                    GameObject tmp = Instantiate(mapTiles[0], pendingNode.tile.transform.position, Quaternion.identity);
                     tmp.transform.parent = transform;
                     Destroy(pendingNode.tile);
                     pendingNode.ChangeTile(tmp);
@@ -103,7 +117,7 @@ public class LoadMap : MonoBehaviour
             {
                 Ray ray = Camera.main.ScreenPointToRay(mousePos);
                 RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-                if(hit.collider.CompareTag("Walkable"))
+                if(hit.collider.CompareTag("Walkable") || hit.collider.CompareTag("Obstacle"))
                 {
                     int x = Mathf.FloorToInt(hit.collider.transform.position.x);
                     int y = Mathf.FloorToInt(hit.collider.transform.position.y);
@@ -205,6 +219,10 @@ public class LoadMap : MonoBehaviour
     IEnumerator Astar_tile(){
         if(startNode == null || endNode == null)
             yield break;
+
+        // check if waypoint
+        int way = toggle_Waypoint.isOn ? 1 : 0;
+
         List<Node> openList = new List<Node>();
         List<Node> closedList = new List<Node>();
         openList.Add(startNode);
@@ -218,7 +236,7 @@ public class LoadMap : MonoBehaviour
             }
             openList.Remove(q);
 
-            foreach(Node n in q.neighbors){
+            foreach(Node n in q.GetNeighbor(way)){
                 if(n.tile.CompareTag("Obstacle"))
                     continue;
                 if(n == endNode){
@@ -293,6 +311,16 @@ public class LoadMap : MonoBehaviour
             Destroy(child.gameObject);
         }
         mapTable.Clear();
+    }
+
+    public void ResetMap(){
+        foreach(Transform child in transform)
+        {
+            child.GetComponent<SpriteRenderer>().color = Color.white;
+        }
+        startNode = null;
+        endNode = null;
+        pendingNode = null;
     }
 
     static float Heuristic_Manhattan(Node a, Node b)
