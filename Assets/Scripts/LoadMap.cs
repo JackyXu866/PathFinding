@@ -43,7 +43,6 @@ public class LoadMap : MonoBehaviour
         MapCreate(0);
 
         //create waypoint system
-        //NOT FINISHED YET
 
         // dropdown_Algorithm
         dropdown_Algorithm.ClearOptions();
@@ -210,6 +209,23 @@ public class LoadMap : MonoBehaviour
 
         Camera.main.transform.position = new Vector3(mapWidth/2, mapHeight/2, -10);
         Camera.main.orthographicSize = Mathf.Min(mapWidth, mapHeight)/4;
+
+        //connect way points
+        List<Vector2> waypointsData = new List<Vector2>();
+        if (index == 0)
+            waypointsData = create_database_ar0011sr();
+        else if (index == 1)
+            waypointsData = create_database_Arena2();
+        else if (index == 2)
+            waypointsData = create_database_hrt201n();
+        else if (index == 3)
+            waypointsData = create_database_lak104d();
+
+        for(int i = 0; i < waypointsData.Count; i++)
+        {
+            for(int j = i+1; j < waypointsData.Count; j++)
+                ((Node)mapTable[(Vector2) waypointsData[i]]).AddWaypointConnection(ref mapTable, (Node)mapTable[(Vector2)waypointsData[j]]);
+        }
     }
 
     public void StartAStar(){
@@ -333,26 +349,38 @@ public class LoadMap : MonoBehaviour
         return Mathf.Sqrt(Mathf.Pow(a.x - b.x, 2) + Mathf.Pow(a.y - b.y, 2));
     }
 
-    private void create_database_lak104d()
+    private List<Vector2> create_database_lak104d()
     {
-        int[,] data = {{18,2},{17,3},{13,2},{14,2},{11,1},{11,2},{1,4},{2,5},{6,4},{7,1},{7,4},{5,7},{6,8},{15,6},
+        int[,] data = new int[,] {{18,2},{17,3},{13,2},{14,2},{11,1},{11,2},{1,4},{2,5},{6,4},{7,1},{7,4},{5,7},{6,8},{15,6},
         {17,10},{15,10},{12,9},{12,10},{8,11},{9,12},{4,9},{5,9},{2,10},{3,12},{11,14},{9,16},{10,17},{4,17}};
+        List<Vector2> termsList = new List<Vector2>();
+        for (int i = 0; i < data.GetLength(0); i++)
+        {
+            termsList.Add(new Vector2(data[i,0],data[i,1]));
+        }
+        return termsList;
     }
 
-    private void create_database_Arena2()
+    private List<Vector2> create_database_Arena2()
     {
-        int[,] data = {{2,55},{7,55},{2,51},{7,51},{6,48},{11,51},{12,52},{15,52},{17,54},{18,55},{22,52},{34,52},
+        int[,] data = new int[,] {{2,55},{7,55},{2,51},{7,51},{6,48},{11,51},{12,52},{15,52},{17,54},{18,55},{22,52},{34,52},
         {40,76},{40,68},{40,59},{40,52},{40,44},{40,36},{40,28},{56,76},{48,84},{48,76},{48,68},{48,59},{48,52},
         {48,44},{48,36},{48,28},{48,20},{56,68},{56,59},{56,52},{56,44},{56,36},{56,28},{56,20},{64,84},{64,76},
         {64,68},{64,59},{64,52},{64,44},{64,36},{64,28},{64,20},{72,84},{72,76},{72,68},{72,59},{72,52},{72,44},
         {72,36},{72,28},{72,20},{80,84},{80,76},{80,68},{80,59},{80,52},{88,44},{88,36},{88,28},{96,68},{96,59},
         {96,52},{96,44},{96,36},{102,52},{113,52},{118,52},{125,52},{128,57},{128,65},{123,72},{134,76},{128,46},
         {128,38},{134,32},{123,26},{115,21},{120,9},{126,9},{134,9},{64,89},{64,97},{59,99},{51,99}};
+        List<Vector2> termsList = new List<Vector2>();
+        for (int i = 0; i < data.GetLength(0); i++)
+        {
+            termsList.Add(new Vector2(data[i,0], data[i,1]));
+        }
+        return termsList;
     }
 
-    private void create_database_hrt201n()
+    private List<Vector2> create_database_hrt201n()
     {
-        int[,] data = {{22,148},{16,147},{16,142},{22,142},{20,137},{20,129},{20,126},{20,120},{8,126},{8,120},
+        int[,] data = new int[,] {{22,148},{16,147},{16,142},{22,142},{20,137},{20,129},{20,126},{20,120},{8,126},{8,120},
         {4,125},{4,121},{4,117},{1,125},{30,123},{37,125},{31,120},{36,115},{8,108},{8,104},{8,100},{20,104},
         {33,107},{31,104},{33,102},{33,98},{20,91},{20,89},{20,74},{20,68},{12,68},{8,72},{4,68},{8,65},{28,68},
         {33,68},{42,68},{42,73},{42,62},{45,68},{49,68},{59,68},{59,58},{59,52},{52,52},{52,57},{31,57},{31,49},
@@ -368,11 +396,17 @@ public class LoadMap : MonoBehaviour
         {102,35},{107,35},{112,36},{112,39},{112,42},{108,44},{104,42},{104,38},{86,51},{79,51},{73,51},{76,46},
         {76,43},{76,39},{76,36},{76,30},{76,23},{70,12},{81,12},{76,12},{70,7},{75,4},{79,5},{68,35},{65,39},
         {62,39},{60,35},{60,31},{57,32},{64,26},{64,20},{66,18},{65,18}};
+        List<Vector2> termsList = new List<Vector2>();
+        for (int i = 0; i < data.GetLength(0); i++)
+        {
+            termsList.Add(new Vector2(data[i,0], data[i,1]));
+        }
+        return termsList;
     }
 
-    private void create_database_ar0011sr()
+    private List<Vector2> create_database_ar0011sr()
     {
-        int[,] data = {{21,19},{25,11},{35,9},{37,13},{38,16},{38,3},{44,3},{45,2},{10,34},{10,46},{8,52},{5,62},
+        int[,] data = new int[,] {{21,19},{25,11},{35,9},{37,13},{38,16},{38,3},{44,3},{45,2},{10,34},{10,46},{8,52},{5,62},
         {6,68},{11,74},{10,81},{18,83},{26,89},{25,95},{30,96},{34,98},{44,95},{55,95},{63,94},{77,89},{81,98},
         {90,86},{90,78},{94,77},{97,65},{97,53},{99,46},{99,36},{92,32},{93,27},{83,24},{80,16},{76,14},{72,14},
         {71,8},{65,7},{61,5},{59,8},{59,13},{55,2},{24,82},{34,84},{39,75},{28,75},{24,67},{20,62},{25,51},{20,49},
@@ -381,5 +415,11 @@ public class LoadMap : MonoBehaviour
         {67,41},{68,39},{69,37},{72,35},{75,32},{75,32},{75,32},{73,26},{81,27},{71,39},{73,40},{74,42},{76,43},
         {77,45},{82,33},{87,40},{82,44},{89,46},{84,51},{76,51},{83,62},{75,71},{80,69},{74,69},{77,77},{67,78},
         {67,69},{68,62},{66,64},{63,67},{60,69},{58,71},{56,73},{58,78},{50,80},{42,84}};
+        List<Vector2> termsList = new List<Vector2>();
+        for (int i = 0; i < data.GetLength(0); i++)
+        {
+            termsList.Add(new Vector2(data[i,0], data[i,1]));
+        }
+        return termsList;
     }
 }
