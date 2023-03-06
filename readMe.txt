@@ -4,6 +4,7 @@ top left corner has a ‘+’ button to open up the setting for A*:
 	choose Heuristic between `Manhattan` and `Euclidean`
 	set the timer gap for each iteration of A* (for showing algorithm step by step)
 	start algorithm button (when both start and end are set)
+	reset the map
 
 In map:
 	player could click any tile and turn it to grey -> pending action
@@ -33,3 +34,9 @@ Tile Representation:
 	Advantage: It is more computational friendly
 
 Currently, the size of agent we assume is 1x1, which is equal to the tile size, so we only need to compare the `to tile` is obstacle or not. If the size is bigger, we need to consider about its left and right based on the size of the agent.
+
+Way points design:
+
+After discussion, we decided to use a manual approach to find all way points. using an automatic algorithm, a simple algorithm would only reduce the total number of path points but not build efficient paths, and there are many complex cases and corner cases that make the method unwieldy.
+In our approach, we prioritize coverage, which means that we prioritize avoiding the presence of unreachable destinations. Then, after constructing a reasonable way point map, we perform an optimization to remove some points from the duplicate coverage area and then reduce the computational load.
+The process will be similar with tile method. We first create the map and connect all way points. And then we add the start and end location. The A* algorithm will begin after we connect the start node, end node and other way point nodes. At the end it should have a better result compare to the tile method.
