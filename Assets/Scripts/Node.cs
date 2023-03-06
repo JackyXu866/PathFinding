@@ -44,6 +44,15 @@ public class Node
 
     }
 
+    //add pointway neighbors
+    public void AddPointwayConnection(ref Hashtable mapTable, Node targetNode)
+    {
+        //check if there is obstacle between current node and target node
+        //use y = ax + b function and round up to see result
+        //(0,0) --> (3,1)
+        //check (0,0)(1,0)(2,1)(3,1)
+    }
+
     public void SetColor(Color color)
     {
         Color currentColor = tile.GetComponent<SpriteRenderer>().color;
