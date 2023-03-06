@@ -24,6 +24,7 @@ Color code of Tiles:
 	- Blue: Tiles in Open list
 	- Yellow: Tiles in Closed list
 	- Grey: Pending tiles waiting for actions
+	- Cyan: Waypoint
 
 
 

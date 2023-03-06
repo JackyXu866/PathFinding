@@ -228,6 +228,7 @@ public class LoadMap : MonoBehaviour
         {
             for(int j = i+1; j < waypointsData.Count; j++)
                 ((Node)mapTable[(Vector2) waypointsData[i]]).AddWaypointConnection(ref mapTable, (Node)mapTable[(Vector2)waypointsData[j]]);
+                ((Node)mapTable[(Vector2) waypointsData[i]]).SetColor(Color.cyan);
         }
 
         map_index = index;
@@ -290,6 +291,8 @@ public class LoadMap : MonoBehaviour
                     continue;
                 if(closedList.Contains(n) && n.fCost < newFCost)
                     continue;
+                else if(closedList.Contains(n) && n.fCost >= newFCost)
+                    closedList.Remove(n);
 
                 n.gCost = newGCost;
                 n.hCost = newHCost;
@@ -345,6 +348,7 @@ public class LoadMap : MonoBehaviour
 
     private void CleanUp()
     {
+        StopAllCoroutines();
         startNode = null;
         endNode = null;
         pendingNode = null;
@@ -358,6 +362,7 @@ public class LoadMap : MonoBehaviour
     }
 
     public void ResetMap(){
+        StopAllCoroutines();
         foreach(Transform child in transform)
         {
             child.GetComponent<SpriteRenderer>().color = Color.white;
@@ -436,10 +441,10 @@ public class LoadMap : MonoBehaviour
     private List<Vector2> create_database_ar0011sr()
     {
         int[,] data = new int[,] {{21,19},{25,11},{35,9},{37,13},{38,16},{38,3},{44,3},{45,2},{10,34},{10,46},{8,52},{5,62},
-        {6,68},{11,74},{10,81},{18,83},{26,89},{25,95},{30,96},{34,98},{44,95},{55,95},{63,94},{77,89},{81,98},
+        {6,68},{11,74},{10,81},{18,83},{26,89},{25,95},{30,96},{34,98},{44,95},{55,95},{63,94},{77,89},{81,93},
         {90,86},{90,78},{94,77},{97,65},{97,53},{99,46},{99,36},{92,32},{93,27},{83,24},{80,16},{76,14},{72,14},
         {71,8},{65,7},{61,5},{59,8},{59,13},{55,2},{24,82},{34,84},{39,75},{28,75},{24,67},{20,62},{25,51},{20,49},
-        {33,57},{35,49},{37,47},{39,44},{37,42},{35,40},{33,38},{28,41},{42,43},{44,41},{46,39},{48,37},{46,35},
+        {33,53},{35,49},{37,47},{39,44},{37,42},{35,40},{33,38},{28,41},{42,43},{44,41},{46,39},{48,37},{46,35},
         {36,33},{41,29},{51,26},{56,31},{58,25},{63,21},{64,26},{62,31},{64,32},{65,34},{67,35},{63,45},{65,43},
         {67,41},{68,39},{69,37},{72,35},{75,32},{75,32},{75,32},{73,26},{81,27},{71,39},{73,40},{74,42},{76,43},
         {77,45},{82,33},{87,40},{82,44},{89,46},{84,51},{76,51},{83,62},{75,71},{80,69},{74,69},{77,77},{67,78},

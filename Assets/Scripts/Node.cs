@@ -49,40 +49,19 @@ public class Node
     //add pointway neighbors
     public void AddWaypointConnection(ref Hashtable table, Node targetNode)
     {
-        //check if there is obstacle between current node and target node
-        //use y = ax + b function and round up to see result
-        //(0,0) --> (3,1)
-        //check (0,0)(1,0)(2,1)(3,1)
-        //float a = float(this.y - targetNode.y) / float(this.x - targetNode.x);
-        //float b = a * this.x - this.y;
-        // for (int i = 0; i < targetNode.x; i++)
-        // {
-        //     for (int j = 0; j < targetNode.y; j++)
-        //     {
-        //         if(LinePassesThroughGrid((float)this.x, (float)this.y, (float)targetNode.x, (float)targetNode.y, (float)i, (float)j, (float)1.0))
-        //         {
-        //             Vector2 position = new Vector2(i, j);
-        //             // Collider2D collider = Physics2D.OverlapPoint(position);
-        //             Node n = (Node)table[position];
-        //             if (n.tile.CompareTag("Obstacle"))
-        //             {
-        //                 Debug.Log("Line passes through grid");
-        //                 return;
-        //             }
-        //         }
-        //     }
-        // }
-        // waypointNeighbors.Add(targetNode);
-        // ((Node)table[new Vector2(targetNode.x, targetNode.y)]).waypointNeighbors.Add(this);
+        if(targetNode.tile.CompareTag("Obstacle"))
+            return;
 
-        Ray2D ray = new Ray2D(new Vector2(this.x, this.y), new Vector2(targetNode.x - this.x, targetNode.y - this.y).normalized);
-        RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, Vector2.Distance(this.tile.transform.position, targetNode.tile.transform.position), LayerMask.GetMask("Obstacle"));
+        if(this == targetNode)
+            return;
+        // Ray2D ray = new Ray2D(new Vector2(this.x, this.y), new Vector2(targetNode.x - this.x, targetNode.y - this.y).normalized);
+        RaycastHit2D hit = Physics2D.Raycast(this.tile.transform.position,  (targetNode.tile.transform.position - this.tile.transform.position).normalized , Vector2.Distance(this.tile.transform.position, targetNode.tile.transform.position), LayerMask.GetMask("Obstacle"));
         if(hit.collider == null)
         {
             waypointNeighbors.Add(targetNode);
             ((Node)table[new Vector2(targetNode.x, targetNode.y)]).waypointNeighbors.Add(this);
         }
-        
+
     }
 
     public ref List<Node> GetNeighbor(int index){
@@ -132,27 +111,4 @@ public class Node
     {
         return tile.GetHashCode();
     }
-
-    // public bool LinePassesThroughGrid(float x1, float y1, float x2, float y2, float gridCenterX, float gridCenterY, float gridSize)
-    // {
-    //     float halfGridSize = gridSize / 2f;
-    //     float xMin = Math.Min(x1, x2) - gridCenterX;
-    //     float xMax = Math.Max(x1, x2) - gridCenterX;
-    //     float yMin = Math.Min(y1, y2) - gridCenterY;
-    //     float yMax = Math.Max(y1, y2) - gridCenterY;
-
-    //     if (xMin < -halfGridSize && xMax > halfGridSize) return false; // Line is outside grid horizontally
-    //     if (yMin < -halfGridSize && yMax > halfGridSize) return false; // Line is outside grid vertically
-    //     if (xMin >= halfGridSize || xMax <= -halfGridSize) return false; // Line is entirely outside grid horizontally
-    //     if (yMin >= halfGridSize || yMax <= -halfGridSize) return false; // Line is entirely outside grid vertically
-    //     if (xMax - xMin == 0) return false; // Line is vertical and doesn't intersect with grid
-
-    //     float slope = (y2 - y1) / (x2 - x1);
-    //     float yAtX0 = y1 + slope * (0 - x1);
-    //     float yAtX1 = y1 + slope * (gridSize - x1);
-
-    //     if (yAtX0 >= -halfGridSize && yAtX0 <= halfGridSize) return true; // Line intersects with grid at x=0
-    //     if (yAtX1 >= -halfGridSize && yAtX1 <= halfGridSize) return true; // Line intersects with grid at x=gridSize
-    //     return false; // Line doesn't intersect with grid
-    // }
 }
