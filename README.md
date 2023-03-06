@@ -1,4 +1,4 @@
-WebGL link: [itch](https://gloryjacky.itch.io/astar）
+WebGL link: https://gloryjacky.itch.io/astar
 
 How to RUN program:
 top right corner is a drop down menu to choose the map
